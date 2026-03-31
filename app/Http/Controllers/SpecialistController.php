@@ -11,6 +11,10 @@ class SpecialistController extends Controller
     {
         $specialist = auth()->user()->specialist;
 
+        if (!$specialist) {
+            return view('specialist.no-salon');
+        }
+
         $todayAppointments = Appointment::where('specialist_id', $specialist->id)
             ->where('appointment_date', now()->toDateString())
             ->with(['client', 'service'])
@@ -29,7 +33,7 @@ class SpecialistController extends Controller
     public function updateStatus(Request $request, Appointment $appointment)
     {
         $specialist = auth()->user()->specialist;
-        if ($appointment->specialist_id !== $specialist->id) {
+        if (!$specialist || $appointment->specialist_id !== $specialist->id) {
             abort(403);
         }
 

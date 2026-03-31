@@ -13,12 +13,17 @@ class OwnerController extends Controller
 {
     private function salon()
     {
-        return Salon::where('owner_id', auth()->id())->firstOrFail();
+        return Salon::where('owner_id', auth()->id())->first();
     }
 
     public function dashboard()
     {
         $salon = $this->salon();
+
+        if (!$salon) {
+            return view('owner.no-salon');
+        }
+
         $todayBookings = Appointment::where('salon_id', $salon->id)->where('appointment_date', now()->toDateString())->count();
         $totalRevenue = Appointment::where('salon_id', $salon->id)->where('status', 'completed')->with('service')->get()->sum(fn($a) => $a->service->price);
         $activeSpecialists = Specialist::where('salon_id', $salon->id)->count();
@@ -28,6 +33,7 @@ class OwnerController extends Controller
     public function specialists()
     {
         $salon = $this->salon();
+        if (!$salon) return redirect()->route('owner.dashboard');
         $specialists = Specialist::where('salon_id', $salon->id)->with(['user', 'services'])->get();
         $availableUsers = User::where('role', 'specialist')->whereDoesntHave('specialist')->get();
         return view('owner.specialists', compact('salon', 'specialists', 'availableUsers'));
@@ -42,6 +48,7 @@ class OwnerController extends Controller
         ]);
 
         $salon = $this->salon();
+        if (!$salon) return redirect()->route('owner.dashboard');
         Specialist::create([
             'user_id' => $request->user_id,
             'salon_id' => $salon->id,
@@ -55,7 +62,7 @@ class OwnerController extends Controller
     public function removeSpecialist(Specialist $specialist)
     {
         $salon = $this->salon();
-        if ($specialist->salon_id !== $salon->id) abort(403);
+        if (!$salon || $specialist->salon_id !== $salon->id) abort(403);
         $specialist->delete();
         return back()->with('success', 'Specialist removed.');
     }
@@ -63,12 +70,14 @@ class OwnerController extends Controller
     public function services()
     {
         $salon = $this->salon();
+        if (!$salon) return redirect()->route('owner.dashboard');
         $services = Service::where('salon_id', $salon->id)->get();
         return view('owner.services.index', compact('salon', 'services'));
     }
 
     public function createService()
     {
+        if (!$this->salon()) return redirect()->route('owner.dashboard');
         return view('owner.services.create');
     }
 
@@ -83,6 +92,7 @@ class OwnerController extends Controller
         ]);
 
         $salon = $this->salon();
+        if (!$salon) return redirect()->route('owner.dashboard');
         Service::create(array_merge($request->only(['name', 'description', 'price', 'duration_minutes', 'category']), ['salon_id' => $salon->id]));
 
         return redirect()->route('owner.services')->with('success', 'Service created successfully!');
@@ -91,14 +101,14 @@ class OwnerController extends Controller
     public function editService(Service $service)
     {
         $salon = $this->salon();
-        if ($service->salon_id !== $salon->id) abort(403);
+        if (!$salon || $service->salon_id !== $salon->id) abort(403);
         return view('owner.services.edit', compact('service'));
     }
 
     public function updateService(Request $request, Service $service)
     {
         $salon = $this->salon();
-        if ($service->salon_id !== $salon->id) abort(403);
+        if (!$salon || $service->salon_id !== $salon->id) abort(403);
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -115,7 +125,7 @@ class OwnerController extends Controller
     public function destroyService(Service $service)
     {
         $salon = $this->salon();
-        if ($service->salon_id !== $salon->id) abort(403);
+        if (!$salon || $service->salon_id !== $salon->id) abort(403);
         $service->delete();
         return redirect()->route('owner.services')->with('success', 'Service deleted.');
     }
@@ -123,6 +133,7 @@ class OwnerController extends Controller
     public function appointments()
     {
         $salon = $this->salon();
+        if (!$salon) return redirect()->route('owner.dashboard');
         $appointments = Appointment::where('salon_id', $salon->id)->with(['client', 'specialist.user', 'service'])->orderByDesc('appointment_date')->orderByDesc('appointment_time')->get();
         return view('owner.appointments', compact('salon', 'appointments'));
     }
