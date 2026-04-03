@@ -1,31 +1,56 @@
 @extends('layouts.app')
 @section('title', 'Our Salons')
+
 @section('content')
-<div class="bg-brown py-16">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <h1 class="text-3xl md:text-4xl font-bold text-white">Our Salons</h1>
-        <p class="text-stone-400 mt-2">Discover beauty salons across Kazakhstan</p>
+    <div class="bg-brown py-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-gold">Available Salons</h1>
+            <p class="text-stone-400 mt-2">Discover premium beauty spots across Kazakhstan</p>
+        </div>
     </div>
-</div>
-<div class="max-w-7xl mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @foreach($salons as $salon)
-        <a href="{{ route('salons.show', $salon) }}" class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200 hover:shadow-md hover:border-gold/30 transition-all group">
-            <div class="flex items-start justify-between">
-                <div>
-                    <h3 class="text-xl font-semibold text-brown group-hover:text-gold transition">{{ $salon->name }}</h3>
-                    <p class="text-sm text-stone-500 mt-1 flex items-center"><svg class="w-4 h-4 mr-1 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>{{ $salon->address }}</p>
-                    @if($salon->phone)<p class="text-sm text-stone-400 mt-1">{{ $salon->phone }}</p>@endif
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            @foreach($salons as $salon)
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 group relative overflow-hidden">
+
+                    <div class="flex items-start justify-between relative z-10">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-2xl font-bold text-brown group-hover:text-gold transition">{{ $salon->name }}</h3>
+                                <span class="bg-gold/10 text-gold text-[10px] uppercase tracking-widest px-2 py-1 rounded-full border border-gold/20 font-bold">
+                            Premium
+                        </span>
+                            </div>
+
+                            <p class="text-sm text-stone-500 flex items-center">
+                                <svg class="w-4 h-4 mr-1.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                                {{ $salon->address }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center space-x-1 bg-cream px-3 py-1.5 rounded-2xl border border-stone-100">
+                            <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <span class="text-sm font-bold text-brown">{{ number_format($salon->averageRating(), 1) }}</span>
+                        </div>
+                    </div>
+
+                    <p class="text-stone-500 text-sm mt-4 line-clamp-2 leading-relaxed italic">
+                        "{{ $salon->description }}"
+                    </p>
+
+                    <div class="flex items-center justify-between mt-6 pt-5 border-t border-stone-50">
+                        <div class="flex items-center space-x-4 text-xs font-medium text-stone-400">
+                            <span class="flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-gold/40 mr-2"></span>{{ $salon->specialists->count() }} Artists</span>
+                            <span class="flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-gold/40 mr-2"></span>{{ $salon->services->count() }} Services</span>
+                        </div>
+
+                        <a href="{{ route('salons.show', $salon) }}" class="btn-gold text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-gold/20 transition-all hover:-translate-y-1 active:scale-95">
+                            View Salon
+                        </a>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-1 bg-cream px-2.5 py-1 rounded-full"><svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg><span class="text-sm font-semibold text-brown">{{ number_format($salon->averageRating(), 1) }}</span></div>
-            </div>
-            <p class="text-stone-500 text-sm mt-3">{{ $salon->description }}</p>
-            <div class="flex items-center space-x-4 mt-4 pt-3 border-t border-stone-100 text-xs text-stone-400">
-                <span>{{ $salon->specialists->count() }} specialists</span>
-                <span>{{ $salon->services->count() }} services</span>
-            </div>
-        </a>
-        @endforeach
+            @endforeach
+        </div>
     </div>
-</div>
 @endsection
