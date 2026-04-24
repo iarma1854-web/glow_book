@@ -6,10 +6,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpecialistController;
+use App\Http\Controllers\SalonController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/salons', [HomeController::class, 'salons'])->name('salons');
+Route::get('/salons', [SalonController::class, 'index'])->name('salons');
 Route::get('/salons/{salon}', [HomeController::class, 'showSalon'])->name('salons.show');
 Route::get('/services', [HomeController::class, 'services'])->name('services');
 Route::get('/specialists', [HomeController::class, 'specialists'])->name('specialists');

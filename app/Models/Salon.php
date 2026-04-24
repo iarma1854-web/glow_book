@@ -42,7 +42,7 @@ class Salon extends Model
         return $avg ? round($avg, 1) : 0;
     }
 
-    // Поиск по названию
+   
     public function scopeSearch($query, $term)
     {
         if ($term) {
@@ -52,7 +52,7 @@ class Salon extends Model
         return $query;
     }
 
-    // Фильтр по категории
+   
     public function scopeByCategory($query, $category)
     {
         if ($category) {
@@ -64,7 +64,7 @@ class Salon extends Model
         return $query;
     }
 
-    // Сортировка по рейтингу
+    
     public function scopeBestRated($query)
     {
         return $query->withAvg('specialists', 'rating')

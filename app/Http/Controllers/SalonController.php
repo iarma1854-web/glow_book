@@ -25,8 +25,8 @@ class SalonController extends Controller
             $query->bestRated();
         }
 
-        $salons = $query->get();
+        $salons = $query->with(['specialists', 'services'])->get();
 
-        return view('salons', compact('salons'));
+        return view('salons.index', compact('salons'));
     }
 }
